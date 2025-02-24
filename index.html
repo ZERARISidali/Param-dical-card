@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>paramédical</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script> <!-- Correct QR library -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 400px;
+            margin-bottom: 20px;
+            z-index: 4;
+        }
+
+        .form-container input, .form-container button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .form-container button {
+            background: #007BFF;
+            color: white;
+            cursor: pointer;
+            position: fixed;
+            top: 80vh;
+            left:3%;
+            z-index: 1;
+        }
+
+        .form-container button:hover {
+            background: #0056b3;
+        }
+
+        .card-container {
+            width: 500px;
+            height: 300px;
+            perspective: 1200px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #ffffff, #f9f9f9);
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #ffffff, #f9f9f9);
+            transform: rotateY(180deg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .header {
+            width: 100%;
+            text-align: center;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .header h2 {
+            font-size: 16px;
+            color: #555;
+        }
+
+        .content {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .photo {
+            width: 100px;
+            height: 120px;
+            background: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            border: none;
+            position: relative;
+            bottom: 5vh;
+        }
+
+        .photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .information {
+            text-align: right;
+            flex: 1;
+            padding-left: 20px;
+        }
+
+        .information h3 {
+            font-size: 16px;
+            margin: 10px 0;
+            color: #000;
+            font-weight: 500;
+        }
+        #id_medical{
+            position: absolute;
+            top: 260px;
+            left: 5px;
+        }
+        #branch_display{
+            position: absolute;
+            top: 235px;
+            right: 7px;
+        }
+        #speciality_display{
+            position: absolute;
+            top: 260px;
+            right: 7px;
+        }
+        canvas{
+            width: 60px;
+            height: 60px;
+            position: absolute;
+            top: 200px;
+            left: 20px;
+        }
+        button {
+            padding: 12px 24px;
+            margin: 10px 8px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            background-color: #007BFF;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }        
+        @media (max-width: 400px) {
+            body{
+             position: fixed;
+            }
+            .card {
+                width: 500px;
+                rotate: 90deg;
+                position: fixed;
+                top: 25vh;
+                left:13%;
+            }
+            /* Flip the card on the Y-axis */
+            .card.flipped {
+                transform: rotateX(180deg);
+            }
+            #update,#delete {
+                background-color: #007BFF;
+                position: fixed;
+                top:87vh;
+            }
+            #update{
+              left:60%;
+            }
+            #delete{
+              left: 20%;
+            }
+            .form-container {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 10px 30px #9b9a9a33;
+                text-align: center;
+                width: 350px;
+                margin-bottom: 20px;
+                z-index: 3;
+            }
+    
+            .form-container input, .form-container button {
+                width: 95%;
+                margin: 4px 0;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+            }
+    
+            .form-container button {
+                background: #007BFF;
+                color: white;
+                cursor: pointer;
+                z-index: 1;
+                position: fixed;
+            }
+    
+            .form-container button:hover {
+                background: #0056b3;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container" id="formContainer">
+        <h2>أدخل بياناتك الشخصية </h2>
+        <input type="text" id="firstNameA" placeholder="الاسم باللغة العربية" required>
+        <input type="text" id="firstNameF" placeholder="الاسم باللغة الفرنسية" required>
+        <input type="text" id="lastNameA" placeholder="اللقب باللغة العربية" required>
+        <input type="text" id="lastNameF" placeholder="اللقب باللغة الفرنسية" required>
+        <input type="date" id="birthDate" required>
+        <input type="text" id="placeDate" placeholder="مكان الميلاد" required>
+        <input type="text" id="branch" placeholder="الفرع" required>
+        <input type="text" id="speciality" placeholder="التخصص" required>
+        <input type="text" id="medicalId" placeholder="رقم الشارة" required>
+        <input type="file" id="profileImage" accept="image/*">
+        <button onclick="saveData()">تسجيل</button>
+    </div>
+
+    <div class="card-container" id="cardContainer" onclick="flipCard()" style="display: none;">
+        <div class="card" id="card">
+            <div class="card-face card-front">
+                <div class="header">
+                    <h2>الجمهورية الجزائرية الديمقراطية الشعبية</h2>
+                    <h2>وزارة الصحة</h2>
+                    <h1>بطاقة الطالب</h1>
+                </div>
+                <div class="content">
+                    <div class="photo">
+                        <img id="profilePhoto" src="photo_profile.jpg">
+                    </div>
+                    <div class="information">
+                        <h3 id="last_nameA"></h3>
+                        <h3 id="first_nameA"></h3>
+                        <h3 id="adress_birth_day"></h3>
+                        <h3 id="branch_display"></h3>
+                        <h3 id="speciality_display"></h3>
+                        <h3 id="id_medical"></h3>
+                            <canvas id="qrCanvasBack"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="card-face card-back">
+            </div>
+        </div>
+    </div>
+
+    <button onclick="editData(event)" id="update">تعديل</button>
+    <button onclick="deleteData(event)" id="delete">حذف</button>
+
+    <script>
+        const getId = (id) => document.getElementById(id);
+
+        function flipCard() {
+            getId("card").classList.toggle("flipped");
+        }
+
+        function saveData() {
+            const firstNameA = getId("firstNameA").value.trim();
+            const firstNameF = getId("firstNameF").value.trim();
+            const lastNameA = getId("lastNameA").value.trim();
+            const lastNameF = getId("lastNameF").value.trim();
+            const birthDate = getId("birthDate").value;
+            const placeDate = getId("placeDate").value.trim();
+            const branch = getId("branch").value.trim();
+            const speciality = getId("speciality").value.trim();
+            const medicalId = getId("medicalId").value.trim();
+            const profileImage = getId("profileImage").files[0];
+
+            if (!firstNameA || !firstNameF || !lastNameA || !lastNameF || !birthDate || !placeDate || !branch || !speciality || !medicalId) {
+                alert("الرجاء ملء جميع الحقول المطلوبة.");
+                return;
+            }
+
+            const userData = { firstNameA, firstNameF, lastNameA, lastNameF, birthDate, placeDate, branch, speciality, medicalId };
+            localStorage.setItem("userData", JSON.stringify(userData));
+
+            if (profileImage) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    localStorage.setItem("profileImage", e.target.result);
+                    displayCard();
+                };
+                reader.readAsDataURL(profileImage);
+            } else {
+                displayCard();
+            }
+        }
+
+        function displayCard() {
+            const data = JSON.parse(localStorage.getItem("userData"));
+            if (!data) return;
+
+            getId("first_nameA").innerText = `${data.firstNameA}    ${data.firstNameF}`;
+            getId("last_nameA").innerText = `${data.lastNameA}   ${data.lastNameF}`;
+            getId("adress_birth_day").innerText = `تاريخ ومكان الميلاد: ${data.birthDate} \n ${data.placeDate}`;
+            getId("branch_display").innerText = `الفرع ${data.branch}`;
+            getId("speciality_display").innerText = `الاختصاص ${data.speciality}`;
+            getId("id_medical").innerText = `${data.medicalId}`;
+
+            const savedImage = localStorage.getItem("profileImage");
+            getId("profilePhoto").src = savedImage ? savedImage : "photo_profile.jpg";
+
+            getId("formContainer").style.display = "none";
+            getId("cardContainer").style.display = "block";
+
+            generateQRCode(data.medicalId, "qrCanvasBack");
+        }
+
+        function editData(event) {
+            event.stopPropagation();
+            localStorage.removeItem("userData");
+            localStorage.removeItem("profileImage");
+            location.reload();
+        }
+
+        function deleteData(event) {
+            event.stopPropagation();
+            if (confirm("هل أنت متأكد من حذف البيانات؟")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        function generateQRCode(text, canvasId) {
+            new QRious({
+                element: getId(canvasId),
+                value: text,
+                size: 180,
+                background: 'white',
+                foreground: 'black',
+            });
+        }
+document.addEventListener("contextmenu", function(e) {
+    e.preventDefault();
+});
+
+document.addEventListener("selectstart", function(e) {
+    e.preventDefault();
+});
+        window.onload = function () {
+            localStorage.getItem("userData") ? displayCard() : getId("formContainer").style.display = "block";
+        };
+    </script>
+
+</body>
+</html>
